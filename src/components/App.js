@@ -17,7 +17,7 @@ const LoadableI18nBar = Loadable.Map({
   loader: {
     Bar: () => import('./Bar'),
     i18n: () => fakeDelay(800).then(
-      () => fetch('/i19n/bar.json').then(res => res.json())),
+      () => fetch('/i18n/bar.json').then(res => res.json())),
   },
   loading: Loading,
   render(loaded, props) {
