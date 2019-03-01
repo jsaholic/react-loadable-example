@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Loadable from 'react-loadable';
 import Loading from './Loading';
 import fakeDelay from './fakeDelay';
 
 const LoadableComponent = Loadable({
   loader: () => fakeDelay(1000).then(() => import('./Example')),
-  LoadingComponent: Loading
+  loading: Loading
 });
 
 const LoadableButtonBar = Loadable({
@@ -13,9 +13,23 @@ const LoadableButtonBar = Loadable({
   loading: Loading,
 });
 
-// import {default as RemoteMountComponent} from './OuterExample';
+const LoadableI18nBar = Loadable.Map({
+  loader: {
+    Bar: () => import('./Bar'),
+    i18n: () => fakeDelay(800).then(
+      () => fetch('/i19n/bar.json').then(res => res.json())),
+  },
+  loading: Loading,
+  render(loaded, props) {
+    const Bar = loaded.Bar.default;
+    const i18n = loaded.i18n;
+    return (<div className="wrapper">
+      <Bar {...props} i18n={i18n}/>
+    </div>);
+  },
+});
 
-export default class App extends Component {
+export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = { showBar: false };
@@ -23,24 +37,26 @@ export default class App extends Component {
 
   onClick() {
     this.setState({ showBar: true });
-  };
+  }
 
   onMouseOver() {
     LoadableButtonBar.preload();
-  };
+  }
 
   render() {
+    const { showBar } = this.state;
     return (
       <div>
-        <h1>你好，React 异步组件！</h1>
+        <h1>Hello, React 异步组件.</h1>
         <LoadableComponent />
         <button
+          className="btn"
           onClick={this.onClick.bind(this)}
           onMouseOver={this.onMouseOver}>
-          Show Bar
+          { showBar ? 'Here U are, Bars' : 'Show Bars' }
         </button>
-        { this.state.showBar && <LoadableButtonBar/> }
-        {/* <RemoteMountComponent /> */}
+        { showBar && <LoadableButtonBar/> }
+        { showBar && <LoadableI18nBar/> }
       </div>
     );
   }

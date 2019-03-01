@@ -72,8 +72,10 @@ export default (option) => {
           ...finalOption.styles.map(loadStyle),
       ]).then(() =>
         this.setState({ isInitial: true, },  () => {
-          console.log('dispatchEvent Mount');
-          window.dispatchEvent(new Event(`frontend-module-mount@${finalOption.moduleName}`))
+          console.log('dispatchEvent Mount: ', finalOption.moduleName);
+          setTimeout(() => {
+            window.dispatchEvent(new Event(`frontend-module-mount@${finalOption.moduleName}`))
+          }, 100);
         })
       ).catch(error =>
         this.setState({
